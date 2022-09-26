@@ -19,13 +19,13 @@ const addClass = async (req, res, next) => {
       success: false,
       error,
     });
-    console.log(err);
   }
 };
 
 const getAllClasses = async (req, res, next) => {
   try {
     const allClasses = await Classroom.find({});
+    allClasses.sort((a, b) => a.classId - b.classId);
     res.status(201).json({
       success: true,
       data: allClasses,
@@ -35,13 +35,11 @@ const getAllClasses = async (req, res, next) => {
       success: false,
       error,
     });
-    console.log(err);
   }
 };
 
 const getClass = async (req, res, next) => {
   try {
-    console.log(req.params);
     const classRoom = await Classroom.findOne({
       classId: +req.params.id,
     }).populate("students");
@@ -82,7 +80,6 @@ const updateClass = async (req, res, next) => {
       success: false,
       error,
     });
-    console.log(err);
   }
 };
 module.exports = { getClass, getAllClasses, addClass, updateClass };

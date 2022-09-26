@@ -9,18 +9,6 @@ const postAttendance = async (req, res, next) => {
       classId: classId,
       students,
     });
-
-    // const findClass = await Classroom.findOne({ classId });
-    // console.log(findClass);
-    // if (findClass) {
-    //   findClass.attendance.push({
-    //     date,
-    //     classId: +classId,
-    //     students,
-    //   });
-    //   await findClass.save();
-    // }
-
     await attendance.save();
     console.log(attendance);
     res.status(201).json({
@@ -70,7 +58,6 @@ const getAttendanceForClass = async (req, res) => {
     const findAttendance = await Attendance.find({ classId }).populate(
       "students.student_id"
     );
-    // console.log(findAttendance);
 
     if (findAttendance.length > 0) {
       res.status(200).json({

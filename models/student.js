@@ -11,21 +11,6 @@ const studentSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  // meals: [
-  //   mealsSchema,
-  // {
-  //   type: Date,
-  //   mealId: {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: "Meal",
-  //     required: true,
-  //   },
-  //   isChanged: {
-  //     type: Boolean,
-  //     default: false,
-  //   },
-  // },
-  // ],
 });
 
 module.exports = mongoose.model("Student", studentSchema);

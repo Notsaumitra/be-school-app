@@ -14,6 +14,8 @@ app.use("/auth", require("./routes/auth"));
 app.use("/cls", require("./routes/classRoute"));
 app.use("/stu", require("./routes/studentRoute"));
 app.use("/atd", require("./routes/attendanceRoute"));
+app.use("/mls", require("./routes/mealRoute"));
+app.use("/les", require("./routes/lessonRoute"));
 
 // app.use(logger); //middleware
 

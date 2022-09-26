@@ -1,48 +1,68 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const register = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, role, roleId } = req.body;
     const user = new User({
       firstName,
       lastName,
       email,
       password,
+      role,
+      roleId,
     });
 
-    await user.save();
+    // gensalt receives rounds that a password needs to be processed-- default 10 and return a promise
+    const salt = await bcrypt.genSalt();
+    // we hash the password before saving to the db
+    user.password = await bcrypt.hash(user.password, salt);
+
+    const resp = await user.save();
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
     res.status(201).json({
       success: true,
-      user,
+      token,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       error,
     });
-    console.log(err);
+    console.log(error);
   }
 };
 
-const login = async (req, res, next) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({
       email,
     }).select("+password");
 
-    console.log(user);
-    console.log(password);
-    if (user.password === password) {
-      res.status(200).json({
-        success: true,
-        token: "testJWT",
-      });
+    if (user) {
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (validPassword) {
+        const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
+          expiresIn: process.env.JWT_EXPIRES_IN,
+        });
+        res.status(200).json({
+          success: true,
+          token,
+        });
+      } else {
+        res.status(401).json({
+          success: false,
+          message: "Invalid Credentials",
+        });
+      }
     } else {
       res.status(404).json({
         success: false,
-        error: "Invalid Credentials",
+        message: "User Not found",
       });
     }
   } catch (error) {
@@ -50,7 +70,6 @@ const login = async (req, res, next) => {
       success: false,
       error,
     });
-    console.log(err);
   }
 };
 
@@ -65,8 +84,23 @@ const googleSignIn = async (req, res) => {
       success: false,
       error,
     });
-    console.log(err);
   }
 };
 
-module.exports = { register, login, googleSignIn };
+const getAllStaff = async (req, res) => {
+  try {
+    const staffData = await User.find({ roleId: 101 });
+    res.status(200).json({
+      success: true,
+      staffData,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error,
+    });
+    console.log(error);
+  }
+};
+
+module.exports = { register, login, googleSignIn, getAllStaff };

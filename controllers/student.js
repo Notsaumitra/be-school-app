@@ -12,32 +12,44 @@ const postStudent = async (req, res, next) => {
     });
 
     await student.save();
-    res.status(201).json({
-      success: true,
-      student,
-    });
+    if (student) {
+      res.status(201).json({
+        success: true,
+        student,
+      });
+    }
   } catch (error) {
     res.status(500).json({
       success: false,
       error,
     });
-    console.log(err);
   }
 };
 
-const getStudent = async (req, res, next) => {
+const getStudent = async (req, res) => {
   try {
-    const { studentId } = req.body;
+    const { id: _id } = req.params;
+    console.log(req.params);
     const student = await Student.findOne({
-      studentId,
+      _id,
     });
     console.log(student);
+    if (student) {
+      res.status(200).json({
+        success: true,
+        student,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "Not Found",
+      });
+    }
   } catch (error) {
     res.status(500).json({
       success: false,
       error,
     });
-    console.log(err);
   }
 };
 
@@ -52,7 +64,6 @@ const getAllStudents = async (req, res) => {
       success: false,
       error,
     });
-    console.log(err);
   }
 };
 

@@ -6,9 +6,9 @@ const {
   getAllStudents,
 } = require("../controllers/student");
 
-router.get("/students", getStudent);
+router.get("/students", getAllStudents);
 
-router.get("/student/:id", getAllStudents);
+router.get("/student/:id", getStudent);
 
 router.post("/student", postStudent);
 
